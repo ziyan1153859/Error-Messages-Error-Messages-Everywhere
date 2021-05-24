@@ -1,0 +1,17 @@
+from tabulate import tabulate
+from sympy import *
+
+main_output = int(input("How many barrels of oil were produced in a week: "))
+side_output = int(input("How many loaves of bread were produced in a week: "))
+worker_main = int(input("How many workers work to produce that much oil in a week: "))
+worker_side = int(input("How many workers work to produce that many loaves in a week: "))
+main_usage = int(input("How many barrels of oil are used to produce the barrels of oil in a week: "))
+side_usage = int(input("How many barrels of oil are used to produce the loaves of bread in a week: "))
+main_usage2 = int(input("How many loaves of bread are used to produce barrels of oil in a week: "))
+side_usage2 = int(input("How many loaves of bread are used to produce loaves of bread: "))
+table = [["Industry","Bread", "Oil" ],["Worker Input", worker_side,worker_main],["Oil Input", side_usage,main_usage],["Gross Output",side_output,main_output],["Net Output",side_output-main_usage2-side_usage2,main_output-main_usage-side_usage]]
+print(tabulate(table))
+oil_value = worker_main/(main_output-main_usage)
+M = Matrix([[side_output-side_usage2,0-side_usage,worker_side],[main_usage2,main_output-main_usage,worker_main]])
+M_rref = M.rref()
+print("{}".format(M_rref))
