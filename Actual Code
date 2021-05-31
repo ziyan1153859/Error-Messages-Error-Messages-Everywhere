@@ -1,26 +1,30 @@
 from tabulate import tabulate
 from sympy import *
+
 Variable1 = str(input("State the name of variable 1: "))
-Variable2  = str(input("State the name of variable 2: "))
-main_output = int(input("How much "+Variable1+" was produced in a week: "))
-side_output = int(input("How many "+Variable2+" was produced in a week: "))
-worker_main = int(input("How many workers work to produce that much "+Variable1+" in a week: "))
-worker_side = int(input("How many workers work to produce that much "+Variable2+" in a week: "))
-main_usage = int(input("How much "+Variable1+" was used to produce the "+Variable1+" in a week: "))
-side_usage = int(input("How much "+Variable1+" was used to produce the "+Variable2+" in a week: "))
-main_usage2 = int(input("How much "+Variable2+" was used to produce the "+Variable1+" in a week: "))
-side_usage2 = int(input("How much "+Variable2+" was used to produce the "+Variable2+" in a week: "))
-variable1 = Variable1+" Input"
-variable2 = Variable2+" Input"
-table = [["Industry",Variable1,Variable2],
-         ["Worker Input", worker_main,worker_side],
-         [variable1, main_usage,side_usage],
-         [variable2,main_usage2,side_usage2],
-         ["Gross Output",main_output,side_output],
-         ["Net Output",main_output-main_usage-side_usage,side_output-main_usage2-side_usage2]]
+Variable2 = str(input("State the name of variable 2: "))
+main_output = int(input("How much " + Variable1 + " was produced in a week: "))
+side_output = int(input("How many " + Variable2 + " was produced in a week: "))
+worker_main = int(input("How many workers work to produce that much " + Variable1 + " in a week: "))
+worker_side = int(input("How many workers work to produce that much " + Variable2 + " in a week: "))
+main_usage = int(input("How much " + Variable1 + " was used to produce the " + Variable1 + " in a week: "))
+side_usage = int(input("How much " + Variable1 + " was used to produce the " + Variable2 + " in a week: "))
+main_usage2 = int(input("How much " + Variable2 + " was used to produce the " + Variable1 + " in a week: "))
+side_usage2 = int(input("How much " + Variable2 + " was used to produce the " + Variable2 + " in a week: "))
+variable1 = Variable1 + " Input"
+variable2 = Variable2 + " Input"
+table = [["Industry", Variable1, Variable2],
+         ["Worker Input", worker_main, worker_side],
+         [variable1, main_usage, side_usage],
+         [variable2, main_usage2, side_usage2],
+         ["Gross Output", main_output, side_output],
+         ["Net Output", main_output - main_usage - side_usage, side_output - main_usage2 - side_usage2]]
 print(tabulate(table))
-M = Matrix([[side_output-side_usage2,0-side_usage,worker_side],
-            [0-main_usage2,main_output-main_usage,worker_main]])
-print(M)
+M = Matrix([[side_output - side_usage2, 0 - side_usage, worker_side],
+            [0 - main_usage2, main_output - main_usage, worker_main]])
 M_rref = M.rref()
-print("{}".format(M_rref))
+variable1_value= M_rref[0][5]
+variable2_value = M_rref[0][2]
+print(variable1_value)
+print(variable2_value)
+
