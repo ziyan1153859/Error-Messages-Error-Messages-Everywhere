@@ -1,0 +1,104 @@
+from tabulate import tabulate
+from sympy import *
+import simpy
+Variable1 = str(input("State the name of variable 1: "))
+Variable2  = str(input("State the name of variable 2: "))
+main_output = int(input("How much "+Variable1+" was produced in a week: "))
+side_output = int(input("How many "+Variable2+" was produced in a week: "))
+worker_main = int(input("How many workers work to produce that much "+Variable1+" in a week: "))
+worker_side = int(input("How many workers work to produce that much "+Variable2+" in a week: "))
+main_usage = int(input("How much "+Variable1+" was used to produce the "+Variable1+" in a week: "))
+side_usage = int(input("How much "+Variable1+" was used to produce the "+Variable2+" in a week: "))
+main_usage2 = int(input("How much "+Variable2+" was used to produce the "+Variable1+" in a week: "))
+side_usage2 = int(input("How much "+Variable2+" was used to produce the "+Variable2+" in a week: "))
+variable1 = Variable1+" Input"
+variable2 = Variable2+" Input"
+table = [["Industry",Variable1,Variable2],
+        ["Worker Input", worker_main,worker_side],
+        [variable1, main_usage,side_usage],
+        [variable2,main_usage2,side_usage2],
+        ["Gross Output",main_output,side_output],
+        ["Net Output",main_output-main_usage-side_usage,side_output-main_usage2-side_usage2]]
+print(tabulate(table))
+M = Matrix([[side_output-side_usage2,0-side_usage,worker_side],
+        [0-main_usage2,main_output-main_usage,worker_main]])
+M_rref = M.rref()
+variable1_value= M_rref[0][5]
+variable2_value = M_rref[0][2]
+print(variable1_value)
+print(variable2_value)
+
+def consumer(env,name,Variable11,Variable22,Overflow_demandx,Overflow_demandy):
+    budget = random.choice(range(20,80))
+    buy1 = random.choice(True,False)
+    buy2 = random.choice(True,False)
+    get_x = Variable11.get()
+    get_y = Variable22.get()
+    if buy1 == True and buy2 == True:
+        x_range = int(budget / variable1_value)
+        x_value = random.choice(range(1, x_range))
+        print(x_value)
+        return x_value
+        y_value = (budget - range_x * variable1_value) /variable2_value
+        print(y_value)
+        return y_value
+    if buy1 == True and buy2 == False:
+        x_value = budget/variable1_value
+        y_value = 0
+        print(x_value)
+        return x_value
+        print(y_value)
+        return y_value
+    if buy1 == False and buy2 == True:
+        y_value = budget/variable2_value
+        x_value = 0
+        print(x_value)
+        print(y_value)
+        return y_value
+        return x_value
+    if buy1 == False and buy2 == False:
+        x_value = 0
+        y_value = 0
+        print(x_value)
+        print(y_value)
+        return x_value
+        return y_value
+    with Variable11.request() as req:
+        testx = Variable11.level
+        yield get_x(x_value)
+        if Variable11.level == testx:
+            Overflow_demandx.append(x_value)
+        if Variable11.level != testx:
+            Variable11_amount.append(Variable11.level)
+    with Variable22.request() as req:
+        testy = Variable22.level
+        yield get_y(y_value)
+        if Variable22.level == testy:
+            Overflow_demandy.append(y_value)
+        if Variable22.level != testy:
+            Variable22_amount.append(Variable22.level)
+
+
+
+empty = []
+if Overflow_demandx != empty:
+    x_overflow = sum(Overflow_demandx)
+    ratiox = (main_output+x_overflow)/main_output
+    variable1_value *= ratiox
+if Overflow_demandy != empty:
+    y_overflow = sim(Overflow_demandy)
+    ratioy = (side_output+y_overflow)/side_output
+    variable2_value *= ratioy
+
+env = simpy.Environment()
+Variable11 = simpy.Container(env,main_output,init=main_output)
+Variable22 = simpy.Container(env,side_output,init=side_output)
+Variable11_amount = []
+Variable22_amount = []
+Overflow_demandx = []
+Overflow_demandy =[]
+
+
+env.process(consumer(env, "Consumer", Variable11, Variable22, Overflow_demandx, Overflow_demandy))
+
+env.process(adjuster(env,variable1_value,variable2_value))
